@@ -9,11 +9,9 @@
 //   useEffect(() => {
 //     if (!mountRef.current) return;
 
-//     // Step 1: Create a Scene
 //     const scene = new THREE.Scene();
 //     scene.background = new THREE.Color(0xeeeeee);
 
-//     // Step 2: Create a Camera
 //     const camera = new THREE.PerspectiveCamera(
 //       75, // Field of View (FOV)
 //       window.innerWidth / window.innerHeight,
@@ -22,12 +20,10 @@
 //     );
 //     camera.position.z = 5;
 
-//     // Step 3: Create a Renderer
 //     const renderer = new THREE.WebGLRenderer();
 //     renderer.setSize(window.innerWidth, window.innerHeight);
 //     mountRef.current.appendChild(renderer.domElement);
 
-//     // Step 4: Add Lighting
 //     const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
 //     scene.add(ambientLight);
 
@@ -35,7 +31,6 @@
 //     directionalLight.position.set(10, 10, 10);
 //     scene.add(directionalLight);
 
-//     // Step 5: Add OrbitControls
 //     const controls = new OrbitControls(camera, renderer.domElement);
 //     controls.enableDamping = true; // Smooth movement
 //     controls.dampingFactor = 0.05; // Damping intensity
@@ -43,7 +38,6 @@
 //     controls.minDistance = 2; // Minimum zoom distance
 //     controls.maxDistance = 100; // Maximum zoom distance
 
-//     // Step 6: Load the .obj File
 //     const objLoader = new OBJLoader();
 //     objLoader.load(
 //       '/models/ibda_platform_v1.obj', // Replace with the path to your .obj file
@@ -56,18 +50,15 @@
 //       }
 //     );
 
-//     // Step 7: Animation Loop
 //     const animate = () => {
 //       requestAnimationFrame(animate);
 
-//       // Update OrbitControls
 //       controls.update();
 
 //       renderer.render(scene, camera);
 //     };
 //     animate();
 
-//     // Handle Window Resize
 //     const handleResize = () => {
 //       if (camera && renderer) {
 //         camera.aspect = window.innerWidth / window.innerHeight;
@@ -77,7 +68,6 @@
 //     };
 //     window.addEventListener('resize', handleResize);
 
-//     // Cleanup on Unmount
 //     return () => {
 //       window.removeEventListener('resize', handleResize);
 //       mountRef.current?.removeChild(renderer.domElement);
@@ -101,12 +91,8 @@ const ThreeScene: React.FC = () => {
 
   useEffect(() => {
     if (!mountRef.current) return;
-
-    // Scene
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0xeeeeee);
-
-    // Camera
     const camera = new THREE.PerspectiveCamera(
       75,
       window.innerWidth / window.innerHeight,
@@ -114,29 +100,20 @@ const ThreeScene: React.FC = () => {
       1000
     );
     camera.position.set(0, 5, 10);
-
-    // Renderer
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     mountRef.current.appendChild(renderer.domElement);
-
-    // Lights
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
     scene.add(ambientLight);
-
     const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
     directionalLight.position.set(10, 20, 10);
     scene.add(directionalLight);
-
-    // OrbitControls
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.dampingFactor = 0.05;
     controls.screenSpacePanning = false;
     controls.minDistance = 2;
     controls.maxDistance = 100;
-
-    // Create Water Surface
     const waterGeometry = new THREE.PlaneGeometry(100, 100);
     const water = new Water(waterGeometry, {
       textureWidth: 512,
@@ -157,13 +134,11 @@ const ThreeScene: React.FC = () => {
     water.rotation.x = -Math.PI / 2;
     water.position.y = 0;
     scene.add(water);
-
-    // Load OBJ Model
     const objLoader = new OBJLoader();
     objLoader.load(
       "/models/ibda_platform_v1.obj",
       (object) => {
-        object.position.set(0, 1, 0); // Ensure it floats above the water
+        object.position.set(0, 1, 0);
         scene.add(object);
       },
       undefined,
@@ -171,25 +146,19 @@ const ThreeScene: React.FC = () => {
         console.error("Error loading .obj file:", error);
       }
     );
-
-    // Animation Loop
     const animate = () => {
       requestAnimationFrame(animate);
-      water.material.uniforms["time"].value += 0.03; // Simulate wave motion
+      water.material.uniforms["time"].value += 0.03;
       controls.update();
       renderer.render(scene, camera);
     };
     animate();
-
-    // Handle Resize
     const handleResize = () => {
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(window.innerWidth, window.innerHeight);
     };
     window.addEventListener("resize", handleResize);
-
-    // Cleanup
     return () => {
       window.removeEventListener("resize", handleResize);
       mountRef.current?.removeChild(renderer.domElement);
